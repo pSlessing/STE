@@ -5,7 +5,6 @@ go 1.24.6
 require (
 	github.com/gdamore/tcell/v2 v2.9.0
 	github.com/mattn/go-runewidth v0.0.16
-	github.com/nsf/termbox-go v1.1.1
 )
 
 require (
