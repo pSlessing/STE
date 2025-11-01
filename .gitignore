@@ -1,3 +1,5 @@
 .idea
 .mod
 .sum
+go.mod
+go.sum
