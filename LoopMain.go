@@ -36,9 +36,9 @@ func (s *StyleSet) AsSlice() []tcell.Style {
 }
 
 var STYLES = &StyleSet{
-	MAINSTYLE:      tcell.StyleDefault.Foreground(tcell.ColorWhite).Background(tcell.ColorBlack),
-	STATUSSTYLE:    tcell.StyleDefault.Foreground(tcell.ColorBlack).Background(tcell.ColorWhite),
-	MSGSTYLE:       tcell.StyleDefault.Foreground(tcell.ColorBlack).Background(tcell.ColorWhite),
+	MAINSTYLE:      tcell.StyleDefault.Foreground(tcell.ColorWhite).Background(tcell.ColorDefault),
+	STATUSSTYLE:    tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
+	MSGSTYLE:       tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
 	LINECOUNTSTYLE: tcell.StyleDefault.Foreground(tcell.ColorLightBlue).Background(tcell.ColorWhite),
 }
 var TERMINAL, bootErr = tcell.NewScreen()
@@ -195,6 +195,8 @@ func inputHandling() {
 func handleCommand() {
 	switch strings.ToLower(string(INPUTBUFFER)) {
 	case "quit", "q":
+		TERMINAL.Clear()
+		TERMINAL.Show()
 		os.Exit(0)
 	case "write", "w":
 		WriteLoop()
@@ -202,7 +204,6 @@ func handleCommand() {
 		OpenLoop()
 		CURSORX = LINECOUNTWIDTH
 		CURSORY = 0
-		//termbox.SetCursor(CURSORX, CURSORY)
 	case "save", "s":
 		saveCurrentState()
 	case "saveas", "sa":

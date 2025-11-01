@@ -3,13 +3,9 @@ package main
 import (
 	"strconv"
 
-	"reflect"
-
 	"github.com/gdamore/tcell/v2"
 	"github.com/mattn/go-runewidth"
 )
-
-var structType = reflect.TypeOf(Settings{})
 
 // PrintMessage #TODO: should this be able to use any, or standard colors every time?
 func PrintMessage(col, row int, fg, bg tcell.Color, msg string) {
@@ -53,11 +49,16 @@ func DisplayBuffer() {
 func DisplayStatus() {
 	var col int
 
-	for col = 0; col < COLS+LINECOUNTWIDTH; col++ {
+	TERMINAL.SetContent(0, ROWS+1, ' ', nil, STYLES.STATUSSTYLE)
+	TERMINAL.SetContent(1, ROWS+1, '', nil, STYLES.STATUSSTYLE)
+	TERMINAL.SetContent(2, ROWS+1, '❯', nil, STYLES.STATUSSTYLE)
+
+	BufferOffset := 3
+	for col = BufferOffset; col < COLS+LINECOUNTWIDTH; col++ {
 		TERMINAL.SetContent(col, ROWS+1, ' ', nil, STYLES.STATUSSTYLE)
-		if col < len(INPUTBUFFER) {
+		if col-BufferOffset < len(INPUTBUFFER) {
 			TERMINAL.SetContent(col, ROWS+1,
-				INPUTBUFFER[col],
+				INPUTBUFFER[col-BufferOffset],
 				nil, STYLES.STATUSSTYLE)
 		}
 	}
@@ -103,12 +104,20 @@ func DisplaySettingsLoop(currentPos int) {
 	for i := 0; i < len(styleList); i++ {
 		fgColor, bgColor, _ := styleList[i].Decompose()
 		// Display background setting (this comes first based on your currentPos % 2 == 0 check)
-		PrintMessage(1, currDisplayRow, tcell.ColorWhite, tcell.ColorBlack, styleNames[i]+" BG")
-		PrintMessage(1+len(styleNames[i])+len(" BG")+colorOffset, currDisplayRow, tcell.ColorWhite, tcell.ColorBlack, bgColor.Name())
+		PrintMessage(1, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, styleNames[i]+" BG")
+		DisplayName := "Default"
+		if bgColor.Name() != "" {
+			DisplayName = bgColor.Name()
+		}
+		PrintMessage(1+len(styleNames[i])+len(" BG")+colorOffset, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, DisplayName)
 		currDisplayRow++
 		// Display foreground setting
-		PrintMessage(1, currDisplayRow, tcell.ColorWhite, tcell.ColorBlack, styleNames[i]+" FG")
-		PrintMessage(1+len(styleNames[i])+len(" FG")+colorOffset, currDisplayRow, tcell.ColorWhite, tcell.ColorBlack, fgColor.Name())
+		DisplayName = "Default"
+		if fgColor.Name() != "" {
+			DisplayName = fgColor.Name()
+		}
+		PrintMessage(1, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, styleNames[i]+" FG")
+		PrintMessage(1+len(styleNames[i])+len(" FG")+colorOffset, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, DisplayName)
 		currDisplayRow++
 	}
 }
@@ -124,11 +133,7 @@ func DisplayColorsLoop(offset int) {
 	PrintMessageStyle(0, len(styleList)+5+offset, STYLES.LINECOUNTSTYLE, "~6")
 	//Main
 	PrintMessageStyle(2, len(styleList)+0+offset, STYLES.MAINSTYLE, "This is a piece of text! Some characters for testing: ! # ¤ % & / [] {}")
-	PrintMessageStyle(2, len(styleList)+1+offset, STYLES.MAINSTYLE, "                                                                       ")
-	PrintMessageStyle(2, len(styleList)+2+offset, STYLES.MAINSTYLE, "                                                                       ")
-	PrintMessageStyle(2, len(styleList)+3+offset, STYLES.MAINSTYLE, "                                                                       ")
-	PrintMessageStyle(2, len(styleList)+4+offset, STYLES.MAINSTYLE, "                                                                       ")
-	PrintMessageStyle(2, len(styleList)+5+offset, STYLES.MAINSTYLE, "                                                                       ")
+
 	//Statusbar
 	PrintMessageStyle(0, len(styleList)+6+offset, STYLES.STATUSSTYLE, "write                                                     row 0 col 0")
 	//MSG

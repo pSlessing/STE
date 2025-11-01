@@ -30,12 +30,13 @@ func ChangeSettingsLoop() {
 		"Fuchsia":  tcell.ColorFuchsia,
 		"Purple":   tcell.ColorPurple,
 		"Orange":   tcell.ColorOrange,
+		"Default":  tcell.ColorDefault,
 	}
 
 	colorNames := []string{
 		"Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White",
 		"Gray", "DarkGray", "Silver", "Maroon", "Olive", "Lime", "Aqua", "Teal",
-		"Navy", "Fuchsia", "Purple", "Orange",
+		"Navy", "Fuchsia", "Purple", "Orange", "Default",
 	}
 
 	exampleOffset := 5
@@ -213,6 +214,7 @@ func getColorFromName(colorName string) tcell.Color {
 		"Fuchsia":  tcell.ColorFuchsia,
 		"Purple":   tcell.ColorPurple,
 		"Orange":   tcell.ColorOrange,
+		"Default":  tcell.ColorDefault,
 	}
 
 	if color, exists := colors[colorName]; exists {
