@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -60,6 +61,18 @@ func runEditor() {
 		return
 	}
 	ApplySettings(settings)
+	if len(os.Args) == 2 {
+		workingPath, err := os.Getwd()
+		if err != nil {
+			fmt.Print(err, "Error getting working directory, what happened?")
+		}
+		totalPath := filepath.Join(workingPath, os.Args[1])
+		TEXTBUFFER, err = OpenFile(totalPath)
+		if err != nil {
+			fmt.Println("Couldnt open the file", err, " , please check if the file still exists")
+		}
+		SOURCEFILE = totalPath
+	}
 	mainEditorLoop()
 }
 
@@ -74,7 +87,7 @@ func mainEditorLoop() {
 		if COLS < MAXWIDTH {
 			COLS = MAXWIDTH
 		}
-
+		TERMINAL.Clear()
 		DisplayBuffer()
 		DisplayStatus()
 		TERMINAL.Show()

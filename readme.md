@@ -1,43 +1,70 @@
-### Currently working on migrating from termbox to tcell
-This is a project im using, both to learn GO, but also to implement a larger type of application, in this case, being a text editor :D
+# STE Text Editor
+
+A basic text editor for the terminal, under active development
+
+## Features
 
 ### Current Features
+- **Command-based interface** - Main loop with commands executed via status bar
+- **File operations** - Open, Save, and SaveAs commands for file management
+- **Customizability** - Customizable color schemes with session persistence
 
-- Main Loop using commands on the status bar
-- Write loop using the command write
-- Open command used to open a file
-- Save command for saving current file
-- SaveAs command to specify the filename
-- Row and column count indicating current cursor position
+### Upcoming Features
+- Syntax highlighting for multiple programming languages
+- Fuzzy file search within current directory
+- Command aliasing for improved workflow efficiency
+- Persistent cursor position across mode transitions
 
-### Upcoming features
-- Syntax highlighting for different programming languages
-- Color customizability, saved between sessions
-- Fuzzy searching for opening files in the current directory
-- Shorthand aliasing of commands for faster workflow
-- Cursor movement in Function mode
-- Cursor position being transient between loops (Except for when opening a new file)
+## Installation
 
+### Prerequisites
+- Go 1.16 or higher
 
-### Setup
-# 1. Initialize the Go module
-go mod init ste-text-editor
+### Building from Source
 
-# 2. Download and organize dependencies
+0. Psst, you can use the install script ```./install.sh```
+
+1. Clone the repository and navigate to the project directory
+
+2. Initialize dependencies:
+```bash
 go mod tidy
+```
 
-# 3. Download all dependencies to local cache
-go mod download
+3. Build the binary:
+```bash
+go build -o ste
+```
 
-# 4. Verify the dependencies haven't been tampered with
-go mod verify
+4. Install system-wide (requires sudo):
+```bash
+sudo cp ste /usr/local/bin/
+```
 
-### Running the editor
+5. Clean up the local binary (optional):
+```bash
+rm ste
+```
 
-## Linux
+You can now run `ste` from anywhere in your terminal!
 
-# Run directly using GO
+## Development
+
+### Running Without Installing
+
+Run directly using Go:
+```bash
 go run .
+```
 
-# Or if GO is mad about unused variables due to a test build
-go run -gcflags="-l" .
+### Dependency Management
+
+Download all dependencies:
+```bash
+go mod download
+```
+
+Verify dependency integrity:
+```bash
+go mod verify
+```
