@@ -205,6 +205,8 @@ func handleCommand() {
 		SOURCEFILE = SaveAsLoop()
 	case "settings", "se":
 		ChangeSettingsLoop()
+	case "update":
+		UpdateFromGIT()
 	}
 	TERMINAL.Clear()
 	DisplayBuffer()
