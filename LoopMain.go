@@ -39,7 +39,7 @@ var STYLES = &StyleSet{
 	MAINSTYLE:      tcell.StyleDefault.Foreground(tcell.ColorWhite).Background(tcell.ColorDefault),
 	STATUSSTYLE:    tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
 	MSGSTYLE:       tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
-	LINECOUNTSTYLE: tcell.StyleDefault.Foreground(tcell.ColorLightBlue).Background(tcell.ColorWhite),
+	LINECOUNTSTYLE: tcell.StyleDefault.Foreground(tcell.ColorDarkCyan).Background(tcell.ColorWhite),
 }
 var TERMINAL, bootErr = tcell.NewScreen()
 
@@ -60,25 +60,7 @@ func runEditor() {
 		return
 	}
 	ApplySettings(settings)
-
-	titleLoop()
 	mainEditorLoop()
-}
-
-// #TODO Make this prettier?
-func titleLoop() {
-	TERMINAL.Clear()
-	//Print title here
-	TERMINAL.Show()
-
-	for {
-		TERMINAL.HideCursor()
-		event := TERMINAL.PollEvent()
-		switch event.(type) {
-		case *tcell.EventKey:
-			return
-		}
-	}
 }
 
 func mainEditorLoop() {
