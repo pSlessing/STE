@@ -203,10 +203,17 @@ func handleCommand() {
 		saveCurrentState()
 	case "saveas", "sa":
 		SOURCEFILE = SaveAsLoop()
-	case "settings", "se":
+	case "visual", "vs":
 		ChangeSettingsLoop()
 	case "update":
 		UpdateFromGIT()
+	case "clear", "c":
+		TEXTBUFFER = [][]rune{{}}
+		OFFSETX = 0
+		OFFSETY = 0
+		CURSORX = LINECOUNTWIDTH
+		CURSORY = 0
+		TERMINAL.ShowCursor(CURSORX, CURSORY)
 	}
 	TERMINAL.Clear()
 	DisplayBuffer()
