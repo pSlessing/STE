@@ -1,5 +1,7 @@
 # STE Text Editor
 
+# THIS IS A REWRITE ALLOWING MODULES FOR COMMANDS
+
 A basic text editor for the terminal, under active development
 
 ## Features

@@ -1,5 +1,20 @@
+// main.go
 package main
 
+import (
+	"fmt"
+	"os"
+	"slessingTextEditor/core"
+)
+
 func main() {
-	runEditor()
+	editor, err := core.NewEditor()
+	if err != nil {
+		fmt.Printf("Failed to initialize editor: %v\n", err)
+		os.Exit(1)
+	}
+	defer editor.Terminal.Fini()
+
+	// Plugins are auto-loaded in Run()
+	editor.Run()
 }
