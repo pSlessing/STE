@@ -139,7 +139,6 @@ func (e *EditorCore) mainLoop() {
 		e.Terminal.Clear()
 		e.DisplayBuffer()
 		e.DisplayStatus()
-		e.Terminal.Clear()
 		e.Terminal.Show()
 		e.inputHandling()
 		//TERMINAL.SetCursor(e.CursorX, e.CursorY)
