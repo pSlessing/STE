@@ -1,4 +1,3 @@
-// core/editor.go
 package core
 
 import (
@@ -51,10 +50,11 @@ func NewEditor() (*EditorCore, error) {
 		commands:       make(map[string]Command),
 		LineCountWidth: 3,
 		Styles: &StyleSet{
-			MAINSTYLE:      tcell.StyleDefault.Foreground(tcell.ColorWhite).Background(tcell.ColorDefault),
-			STATUSSTYLE:    tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
-			MSGSTYLE:       tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
-			LINECOUNTSTYLE: tcell.StyleDefault.Foreground(tcell.ColorDarkCyan).Background(tcell.ColorWhite),
+			Main:      tcell.StyleDefault.Foreground(tcell.ColorWhite).Background(tcell.ColorDefault),
+			Status:    tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
+			Message:   tcell.StyleDefault.Foreground(tcell.ColorDefault).Background(tcell.ColorWhite),
+			Linecount: tcell.StyleDefault.Foreground(tcell.ColorDarkCyan).Background(tcell.ColorWhite),
+			Error:     tcell.StyleDefault.Foreground(tcell.ColorBlack).Background(tcell.ColorRed),
 		},
 	}
 
@@ -134,4 +134,9 @@ func (e *EditorCore) handleCommand() {
 	if err := e.ExecuteCommand(cmdName, args); err != nil {
 		e.ShowError(err.Error())
 	}
+}
+
+func (e *EditorCore) ShowError(err string) {
+	e.PrintMessageStyle((e.Cols/2)-(len(err)/2), (e.Rows/2)-1, e.Styles.Error, "ERROR:")
+	e.PrintMessageStyle((e.Cols/2)-(len(err)/2), e.Rows/2, e.Styles.Error, err)
 }
