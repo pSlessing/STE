@@ -29,6 +29,9 @@ type EditorCore struct {
 	// Other state
 	InputBuffer    []rune
 	LineCountWidth int
+
+	//Constants, could maybe be moved into a settings/config file
+	MaxWidth int
 }
 
 func NewEditor() (*EditorCore, error) {
@@ -56,7 +59,14 @@ func NewEditor() (*EditorCore, error) {
 			Linecount: tcell.StyleDefault.Foreground(tcell.ColorDarkCyan).Background(tcell.ColorWhite),
 			Error:     tcell.StyleDefault.Foreground(tcell.ColorBlack).Background(tcell.ColorRed),
 		},
+		MaxWidth: 78,
 	}
+	settings, err := LoadSettings()
+	if err != nil {
+		fmt.Printf("Error loading settings: %v\n", err)
+	}
+
+	editor.ApplySettings(settings)
 
 	// Register built-in commands
 	editor.registerBuiltInCommands()
@@ -116,8 +126,24 @@ func (e *EditorCore) Run() {
 }
 
 func (e *EditorCore) mainLoop() {
-	// Your existing main loop logic
-	// But now handleCommand uses ExecuteCommand
+	e.CursorX = e.LineCountWidth
+	for {
+		e.Cols, e.Rows = e.Terminal.Size()
+		//Ive forgotten why this is 2, one for buffer, but why another?
+		//When 1, status bar is gone, so idk man
+		e.Rows -= 2
+		e.Cols -= e.LineCountWidth
+		if e.Cols < e.MaxWidth {
+			e.Cols = e.MaxWidth
+		}
+		e.Terminal.Clear()
+		e.DisplayBuffer()
+		e.DisplayStatus()
+		e.Terminal.Clear()
+		e.Terminal.Show()
+		e.inputHandling()
+		//TERMINAL.SetCursor(e.CursorX, e.CursorY)
+	}
 }
 
 func (e *EditorCore) handleCommand() {
@@ -139,4 +165,94 @@ func (e *EditorCore) handleCommand() {
 func (e *EditorCore) ShowError(err string) {
 	e.PrintMessageStyle((e.Cols/2)-(len(err)/2), (e.Rows/2)-1, e.Styles.Error, "ERROR:")
 	e.PrintMessageStyle((e.Cols/2)-(len(err)/2), e.Rows/2, e.Styles.Error, err)
+}
+
+func (e *EditorCore) inputHandling() {
+	event := e.Terminal.PollEvent()
+
+	switch ev := event.(type) {
+
+	case *tcell.EventKey:
+		mod, key, ch := ev.Modifiers(), ev.Key(), ev.Rune()
+		if mod == tcell.ModNone {
+			switch key {
+			case tcell.KeyEnter:
+				{
+					e.handleCommand()
+					e.InputBuffer = []rune{}
+				}
+			case tcell.KeyBackspace, tcell.KeyBackspace2:
+				{
+					if len(e.InputBuffer) > 0 {
+						e.InputBuffer = e.InputBuffer[:len(e.InputBuffer)-1]
+					}
+				}
+			case tcell.KeyEsc:
+				{
+					return
+				}
+			case tcell.KeyUp:
+				{
+					if e.CursorY > 0 {
+						// Move cursor up within visible area
+						e.CursorY--
+					} else if e.OffsetY > 0 {
+						// Scroll up when cursor is at top
+						e.OffsetY--
+					}
+					// Adjust cursor X if moving to a shorter line
+					if e.CursorY+e.OffsetY < len(e.TextBuffer) && e.CursorX-e.LineCountWidth > len(e.TextBuffer[e.CursorY+e.OffsetY]) {
+						e.CursorX = len(e.TextBuffer[e.CursorY+e.OffsetY]) + e.LineCountWidth
+					}
+				}
+			case tcell.KeyDown:
+				{
+					if e.CursorY < e.Rows-1 && e.CursorY+e.OffsetY+1 < len(e.TextBuffer) {
+						// Move cursor down within visible area
+						e.CursorY++
+					} else if e.OffsetY+e.Rows < len(e.TextBuffer) {
+						// Scroll down when cursor is at bottom
+						e.OffsetY++
+					}
+					// Adjust cursor X if moving to a shorter line
+					if e.CursorY+e.OffsetY < len(e.TextBuffer) && e.CursorX-e.LineCountWidth > len(e.TextBuffer[e.CursorY+e.OffsetY]) {
+						e.CursorX = len(e.TextBuffer[e.CursorY+e.OffsetY]) + e.LineCountWidth
+					}
+				}
+			case tcell.KeyLeft:
+				{
+					if e.CursorX > e.LineCountWidth {
+						e.CursorX--
+						// Horizontal scroll left if needed
+						if e.CursorX < e.LineCountWidth {
+							e.CursorX = e.LineCountWidth
+						}
+					} else if e.OffsetX > 0 {
+						e.OffsetX--
+					}
+				}
+			case tcell.KeyRight:
+				{
+					if e.CursorY+e.OffsetY < len(e.TextBuffer) {
+						// Only allow moving right if not past end of line
+						lineLen := len(e.TextBuffer[e.CursorY+e.OffsetY])
+						if e.CursorX-e.LineCountWidth+e.OffsetX < lineLen {
+							e.CursorX++
+							// Horizontal scroll right if needed
+							if e.CursorX >= e.Cols+e.LineCountWidth {
+								e.OffsetX++
+								e.CursorX = e.Cols + e.LineCountWidth - 1
+							}
+						}
+					}
+				}
+			default:
+				e.InputBuffer = append(e.InputBuffer, ch)
+			}
+		} else if mod == tcell.ModCtrl {
+
+		} else if mod == tcell.ModAlt {
+		}
+
+	}
 }

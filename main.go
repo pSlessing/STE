@@ -13,7 +13,6 @@ func main() {
 		fmt.Printf("Failed to initialize editor: %v\n", err)
 		os.Exit(1)
 	}
-	defer editor.Terminal.Fini()
 
 	// Plugins are auto-loaded in Run()
 	editor.Run()
