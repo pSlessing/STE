@@ -13,7 +13,7 @@ func (e *EditorCore) cmdQuit(*EditorCore, []string) error {
 }
 
 func (e *EditorCore) cmdWrite(*EditorCore, []string) error {
-	os.Exit(0)
+	e.loopWrite()
 	return nil
 }
 
