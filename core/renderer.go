@@ -90,54 +90,48 @@ func (e *EditorCore) DisplayLineNumber(row int, textBufferRow int) {
 	e.PrintMessageStyle(lineNumberOffset, row, e.Styles.Linecount, lineNumberStr)
 }
 
-//TODO: Refactor all of the below bs
-/* func (e *EditorCore) DisplaySettingsLoop(currentPos int) {
+// TODO: Refactor all of the below bs
+func (e *EditorCore) DisplaySettingsLoop(currentPos int) {
 	//Offset between setting names and colors
-	colorOffset := 2
+	colorOffset := "  "
 	e.Terminal.SetContent(0, currentPos, ' ', nil, tcell.StyleDefault.Background(tcell.ColorWhite).Foreground(tcell.ColorBlack))
-	styleList := e.Styles.AsSlice()
-	currDisplayRow := 0
 
-	// Define style names that match your actual styles
-	styleNames := []string{"Main", "Status", "Msg", "LineCount"}
+	mainFg, mainBg, _ := e.Styles.Main.Decompose()
+	e.PrintMessageStyle(1, 0, e.Styles.Message, "Main Foreground"+colorOffset+mainFg.String())
+	e.PrintMessageStyle(1, 1, e.Styles.Message, "Main Background"+colorOffset+mainBg.String())
 
-	for i := 0; i < len(styleList); i++ {
-		fgColor, bgColor, _ := styleList[i].Decompose()
-		// Display background setting (this comes first based on your currentPos % 2 == 0 check)
-		e.PrintMessage(1, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, styleNames[i]+" BG")
-		DisplayName := "Default"
-		if bgColor.Name() != "" {
-			DisplayName = bgColor.Name()
-		}
-		e.PrintMessage(1+len(styleNames[i])+len(" BG")+colorOffset, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, DisplayName)
-		currDisplayRow++
-		// Display foreground setting
-		DisplayName = "Default"
-		if fgColor.Name() != "" {
-			DisplayName = fgColor.Name()
-		}
-		e.PrintMessage(1, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, styleNames[i]+" FG")
-		e.PrintMessage(1+len(styleNames[i])+len(" FG")+colorOffset, currDisplayRow, tcell.ColorWhite, tcell.ColorDefault, DisplayName)
-		currDisplayRow++
-	}
+	statusFg, statusBg, _ := e.Styles.Main.Decompose()
+	e.PrintMessageStyle(1, 2, e.Styles.Message, "Status Foreground"+colorOffset+statusFg.String())
+	e.PrintMessageStyle(1, 3, e.Styles.Message, "Status Background"+colorOffset+statusBg.String())
+
+	messageFg, messageBg, _ := e.Styles.Main.Decompose()
+	e.PrintMessageStyle(1, 4, e.Styles.Message, "Message Foreground"+colorOffset+messageFg.String())
+	e.PrintMessageStyle(1, 5, e.Styles.Message, "Message Background"+colorOffset+messageBg.String())
+
+	linecountFg, linecountBg, _ := e.Styles.Main.Decompose()
+	e.PrintMessageStyle(1, 6, e.Styles.Message, "Linecount Foreground"+colorOffset+linecountFg.String())
+	e.PrintMessageStyle(1, 7, e.Styles.Message, "Linecount Background"+colorOffset+linecountBg.String())
+
+	errorFg, errorBg, _ := e.Styles.Main.Decompose()
+	e.PrintMessageStyle(1, 8, e.Styles.Message, "Error Foreground"+colorOffset+errorFg.String())
+	e.PrintMessageStyle(1, 9, e.Styles.Message, "Error Background"+colorOffset+errorBg.String())
+
 }
 
 func (e *EditorCore) DisplayColorsLoop(offset int) {
-	styleList := e.Styles.AsSlice()
 	//LineCount
-	e.PrintMessageStyle(0, len(styleList)+offset, e.Styles.Linecount, "~1")
-	e.PrintMessageStyle(0, len(styleList)+1+offset, e.Styles.Linecount, "~2")
-	e.PrintMessageStyle(0, len(styleList)+2+offset, e.Styles.Linecount, "~3")
-	e.PrintMessageStyle(0, len(styleList)+3+offset, e.Styles.Linecount, "~4")
-	e.PrintMessageStyle(0, len(styleList)+4+offset, e.Styles.Linecount, "~5")
-	e.PrintMessageStyle(0, len(styleList)+5+offset, e.Styles.Linecount, "~6")
+	e.PrintMessageStyle(0, 10+offset, e.Styles.Linecount, "~1")
+	e.PrintMessageStyle(0, 10+1+offset, e.Styles.Linecount, "~2")
+	e.PrintMessageStyle(0, 10+2+offset, e.Styles.Linecount, "~3")
+	e.PrintMessageStyle(0, 10+3+offset, e.Styles.Linecount, "~4")
+	e.PrintMessageStyle(0, 10+4+offset, e.Styles.Linecount, "~5")
+	e.PrintMessageStyle(0, 10+5+offset, e.Styles.Linecount, "~6")
 	//Main
-	e.PrintMessageStyle(2, len(styleList)+0+offset, e.Styles.Main, "This is a piece of text! Some characters for testing: ! # ¤ % & / [] {}")
+	e.PrintMessageStyle(2, 10+0+offset, e.Styles.Main, "This is a piece of text! Some characters for testing: ! # ¤ % & / [] {}")
 
 	//Statusbar
-	e.PrintMessageStyle(0, len(styleList)+6+offset, e.Styles.Status, "write                                                     row 0 col 0")
+	e.PrintMessageStyle(0, 10+6+offset, e.Styles.Status, "write                                                     row 0 col 0")
 	//MSG
-	e.PrintMessageStyle(30, len(styleList)+3+offset, e.Styles.Message, "Open file:")
-	e.PrintMessageStyle(30, len(styleList)+4+offset, e.Styles.Message, "file.txt  ")
+	e.PrintMessageStyle(30, 10+3+offset, e.Styles.Message, "Open file:")
+	e.PrintMessageStyle(30, 10+4+offset, e.Styles.Message, "file.txt  ")
 }
-*/
