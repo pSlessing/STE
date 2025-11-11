@@ -200,3 +200,119 @@ func main() {
 	}
 }
 */
+
+// Helper function to get the current color position based on the selected setting
+func (e *EditorCore) getCurrentColorPos(currentPos int, colorNames []string) int {
+	//Please let me reflect the number of fields in here
+	if currentPos >= 10 {
+		return 0
+	}
+	var currentColor tcell.Color
+	switch currentPos {
+	case 0:
+		currentColor, _, _ = e.Styles.Main.Decompose()
+	case 1:
+		_, currentColor, _ = e.Styles.Main.Decompose()
+	case 2:
+		currentColor, _, _ = e.Styles.Status.Decompose()
+	case 3:
+		_, currentColor, _ = e.Styles.Status.Decompose()
+	case 4:
+		currentColor, _, _ = e.Styles.Message.Decompose()
+	case 5:
+		_, currentColor, _ = e.Styles.Message.Decompose()
+	case 6:
+		currentColor, _, _ = e.Styles.Linecount.Decompose()
+	case 7:
+		_, currentColor, _ = e.Styles.Linecount.Decompose()
+	case 8:
+		currentColor, _, _ = e.Styles.Error.Decompose()
+	case 9:
+		_, currentColor, _ = e.Styles.Error.Decompose()
+	}
+
+	// What the fuck is this shit use a god damn map
+	for i, colorName := range colorNames {
+		if e.getColorFromName(colorName) == currentColor {
+			return i
+		}
+	}
+
+	// If color not found in our list, return 0 (default to first color)
+	return 0
+}
+
+// Helper function to convert color name to tcell.Color
+func (e *EditorCore) getColorFromName(colorName string) tcell.Color {
+	colors := map[string]tcell.Color{
+		"Black":    tcell.ColorBlack,
+		"Red":      tcell.ColorRed,
+		"Green":    tcell.ColorGreen,
+		"Yellow":   tcell.ColorYellow,
+		"Blue":     tcell.ColorBlue,
+		"Magenta":  tcell.ColorDarkMagenta,
+		"Cyan":     tcell.ColorDarkCyan,
+		"White":    tcell.ColorWhite,
+		"Gray":     tcell.ColorGray,
+		"DarkGray": tcell.ColorDarkGray,
+		"Silver":   tcell.ColorSilver,
+		"Maroon":   tcell.ColorMaroon,
+		"Olive":    tcell.ColorOlive,
+		"Lime":     tcell.ColorLime,
+		"Aqua":     tcell.ColorAqua,
+		"Teal":     tcell.ColorTeal,
+		"Navy":     tcell.ColorNavy,
+		"Fuchsia":  tcell.ColorFuchsia,
+		"Purple":   tcell.ColorPurple,
+		"Orange":   tcell.ColorOrange,
+		"Default":  tcell.ColorDefault,
+	}
+
+	if color, exists := colors[colorName]; exists {
+		return color
+	}
+	return tcell.ColorDefault
+}
+
+func (e *EditorCore) updateStylesHelper(switchIndex int, selectedColor tcell.Color, isBackground bool) {
+	switch switchIndex {
+	case 0: // Main style
+		if isBackground {
+			fg, _, _ := e.Styles.Main.Decompose()
+			e.Styles.Main = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
+		} else {
+			_, bg, _ := e.Styles.Main.Decompose()
+			e.Styles.Main = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
+		}
+	case 1: // Status style
+		if isBackground {
+			fg, _, _ := e.Styles.Status.Decompose()
+			e.Styles.Status = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
+		} else {
+			_, bg, _ := e.Styles.Status.Decompose()
+			e.Styles.Status = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
+		}
+	case 2: // Message style
+		if isBackground {
+			fg, _, _ := e.Styles.Message.Decompose()
+			e.Styles.Message = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
+		} else {
+			_, bg, _ := e.Styles.Message.Decompose()
+			e.Styles.Message = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
+		}
+	case 3: // Line count style
+		if isBackground {
+			fg, _, _ := e.Styles.Linecount.Decompose()
+			e.Styles.Linecount = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
+		} else {
+			_, bg, _ := e.Styles.Linecount.Decompose()
+			e.Styles.Linecount = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
+		}
+	}
+}
+
+func (e *EditorCore) ChangeSettingsLoop() {
+	for {
+
+	}
+}
