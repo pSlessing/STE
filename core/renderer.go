@@ -90,31 +90,30 @@ func (e *EditorCore) DisplayLineNumber(row int, textBufferRow int) {
 	e.PrintMessageStyle(lineNumberOffset, row, e.Styles.Linecount, lineNumberStr)
 }
 
-// TODO: Refactor all of the below bs
 func (e *EditorCore) DisplaySettingsLoop(currentPos int) {
 	//Offset between setting names and colors
 	colorOffset := "  "
 	e.Terminal.SetContent(0, currentPos, ' ', nil, tcell.StyleDefault.Background(tcell.ColorWhite).Foreground(tcell.ColorBlack))
 
 	mainFg, mainBg, _ := e.Styles.Main.Decompose()
-	e.PrintMessageStyle(1, 0, e.Styles.Message, "Main Foreground"+colorOffset+mainFg.String())
-	e.PrintMessageStyle(1, 1, e.Styles.Message, "Main Background"+colorOffset+mainBg.String())
+	e.PrintMessageStyle(1, 0, tcell.StyleDefault.Foreground(mainFg), "Main Foreground"+colorOffset+mainFg.String())
+	e.PrintMessageStyle(1, 1, tcell.StyleDefault.Foreground(mainBg), "Main Background"+colorOffset+mainBg.String())
 
-	statusFg, statusBg, _ := e.Styles.Main.Decompose()
-	e.PrintMessageStyle(1, 2, e.Styles.Message, "Status Foreground"+colorOffset+statusFg.String())
-	e.PrintMessageStyle(1, 3, e.Styles.Message, "Status Background"+colorOffset+statusBg.String())
+	statusFg, statusBg, _ := e.Styles.Status.Decompose()
+	e.PrintMessageStyle(1, 2, tcell.StyleDefault.Foreground(statusFg), "Status Foreground"+colorOffset+statusFg.String())
+	e.PrintMessageStyle(1, 3, tcell.StyleDefault.Foreground(statusBg), "Status Background"+colorOffset+statusBg.String())
 
-	messageFg, messageBg, _ := e.Styles.Main.Decompose()
-	e.PrintMessageStyle(1, 4, e.Styles.Message, "Message Foreground"+colorOffset+messageFg.String())
-	e.PrintMessageStyle(1, 5, e.Styles.Message, "Message Background"+colorOffset+messageBg.String())
+	messageFg, messageBg, _ := e.Styles.Message.Decompose()
+	e.PrintMessageStyle(1, 4, tcell.StyleDefault.Foreground(messageFg), "Message Foreground"+colorOffset+messageFg.String())
+	e.PrintMessageStyle(1, 5, tcell.StyleDefault.Foreground(messageBg), "Message Background"+colorOffset+messageBg.String())
 
-	linecountFg, linecountBg, _ := e.Styles.Main.Decompose()
-	e.PrintMessageStyle(1, 6, e.Styles.Message, "Linecount Foreground"+colorOffset+linecountFg.String())
-	e.PrintMessageStyle(1, 7, e.Styles.Message, "Linecount Background"+colorOffset+linecountBg.String())
+	linecountFg, linecountBg, _ := e.Styles.Linecount.Decompose()
+	e.PrintMessageStyle(1, 6, tcell.StyleDefault.Foreground(linecountFg), "Linecount Foreground"+colorOffset+linecountFg.String())
+	e.PrintMessageStyle(1, 7, tcell.StyleDefault.Foreground(linecountBg), "Linecount Background"+colorOffset+linecountBg.String())
 
-	errorFg, errorBg, _ := e.Styles.Main.Decompose()
-	e.PrintMessageStyle(1, 8, e.Styles.Message, "Error Foreground"+colorOffset+errorFg.String())
-	e.PrintMessageStyle(1, 9, e.Styles.Message, "Error Background"+colorOffset+errorBg.String())
+	errorFg, errorBg, _ := e.Styles.Error.Decompose()
+	e.PrintMessageStyle(1, 8, tcell.StyleDefault.Foreground(errorFg), "Error Foreground"+colorOffset+errorFg.String())
+	e.PrintMessageStyle(1, 9, tcell.StyleDefault.Foreground(errorBg), "Error Background"+colorOffset+errorBg.String())
 
 }
 

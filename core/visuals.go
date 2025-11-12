@@ -103,7 +103,8 @@ func LoadSettings() (Settings, error) {
 	if err != nil {
 		// File doesn't exist, create default config
 		defaultSettings := GetDefaultSettings()
-		if saveErr := SaveSettings(defaultSettings); saveErr != nil {
+		saveErr := SaveSettings(defaultSettings)
+		if saveErr != nil {
 			return Settings{}, fmt.Errorf("failed to create default config: %w", saveErr)
 		}
 		return defaultSettings, nil
@@ -274,44 +275,32 @@ func (e *EditorCore) getColorFromName(colorName string) tcell.Color {
 	return tcell.ColorDefault
 }
 
-func (e *EditorCore) updateStylesHelper(switchIndex int, selectedColor tcell.Color, isBackground bool) {
-	switch switchIndex {
-	case 0: // Main style
-		if isBackground {
-			fg, _, _ := e.Styles.Main.Decompose()
-			e.Styles.Main = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
-		} else {
-			_, bg, _ := e.Styles.Main.Decompose()
-			e.Styles.Main = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
-		}
-	case 1: // Status style
-		if isBackground {
-			fg, _, _ := e.Styles.Status.Decompose()
-			e.Styles.Status = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
-		} else {
-			_, bg, _ := e.Styles.Status.Decompose()
-			e.Styles.Status = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
-		}
-	case 2: // Message style
-		if isBackground {
-			fg, _, _ := e.Styles.Message.Decompose()
-			e.Styles.Message = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
-		} else {
-			_, bg, _ := e.Styles.Message.Decompose()
-			e.Styles.Message = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
-		}
-	case 3: // Line count style
-		if isBackground {
-			fg, _, _ := e.Styles.Linecount.Decompose()
-			e.Styles.Linecount = tcell.StyleDefault.Background(selectedColor).Foreground(fg)
-		} else {
-			_, bg, _ := e.Styles.Linecount.Decompose()
-			e.Styles.Linecount = tcell.StyleDefault.Background(bg).Foreground(selectedColor)
-		}
+func (e *EditorCore) updateStylesHelper(currentPos int, selectedColor tcell.Color) {
+	switch currentPos {
+	case 0:
+		e.Styles.Main = e.Styles.Main.Foreground(selectedColor)
+	case 1:
+		e.Styles.Main = e.Styles.Main.Background(selectedColor)
+	case 2:
+		e.Styles.Status = e.Styles.Status.Foreground(selectedColor)
+	case 3:
+		e.Styles.Status = e.Styles.Status.Background(selectedColor)
+	case 4:
+		e.Styles.Message = e.Styles.Message.Foreground(selectedColor)
+	case 5:
+		e.Styles.Message = e.Styles.Message.Background(selectedColor)
+	case 6:
+		e.Styles.Linecount = e.Styles.Linecount.Foreground(selectedColor)
+	case 7:
+		e.Styles.Linecount = e.Styles.Linecount.Background(selectedColor)
+	case 8:
+		e.Styles.Error = e.Styles.Error.Foreground(selectedColor)
+	case 9:
+		e.Styles.Error = e.Styles.Error.Background(selectedColor)
 	}
 }
 
-func (e *EditorCore) ChangeSettingsLoop() {
+func (e *EditorCore) loopChangeSettings() {
 
 	colors := map[string]tcell.Color{
 		// Basic colors
@@ -371,9 +360,12 @@ func (e *EditorCore) ChangeSettingsLoop() {
 						// Apply selected color to current style setting
 						if currentPos < e.SettingsLength {
 							selectedColor := colors[colorNames[colorPos]]
-							styleIndex := currentPos / 2
-							isBackground := (currentPos % 2) == 0
-							e.updateStylesHelper(styleIndex, selectedColor, isBackground)
+							e.updateStylesHelper(currentPos, selectedColor)
+							currentSettings := e.GetCurrentSettings()
+							err := SaveSettings(currentSettings)
+							if err != nil {
+								e.PrintMessageStyle(e.Cols/2, e.Rows/2, e.Styles.Error, "An error happened when saving the settings, please try again")
+							}
 
 						}
 						return
@@ -417,9 +409,7 @@ func (e *EditorCore) ChangeSettingsLoop() {
 						// Apply selected color immediately for preview
 						if currentPos < e.SettingsLength {
 							selectedColor := colors[colorNames[colorPos]]
-							styleIndex := currentPos / 2
-							isBackground := (currentPos % 2) == 0
-							e.updateStylesHelper(styleIndex, selectedColor, isBackground)
+							e.updateStylesHelper(currentPos, selectedColor)
 						}
 					}
 				case tcell.KeyRight:
@@ -433,9 +423,7 @@ func (e *EditorCore) ChangeSettingsLoop() {
 						// Apply selected color immediately for preview
 						if currentPos < e.SettingsLength {
 							selectedColor := colors[colorNames[colorPos]]
-							styleIndex := currentPos / 2
-							isBackground := (currentPos % 2) == 0
-							e.updateStylesHelper(styleIndex, selectedColor, isBackground)
+							e.updateStylesHelper(currentPos, selectedColor)
 						}
 					}
 				default:

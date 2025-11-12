@@ -65,7 +65,7 @@ func NewEditor() (*EditorCore, error) {
 	}
 	settings, err := LoadSettings()
 	if err != nil {
-		fmt.Printf("Error loading settings: %v\n", err)
+		editor.PrintMessageStyle(editor.Cols/2, editor.Rows/2, editor.Styles.Error, "Error loading settings"+(err.Error()))
 	}
 
 	editor.ApplySettings(settings)
@@ -101,6 +101,12 @@ func (e *EditorCore) registerBuiltInCommands() {
 			Aliases:     []string{"o"},
 			Description: "Open a file",
 			Execute:     e.cmdOpen,
+		},
+		{
+			Name:        "settings",
+			Aliases:     []string{"se"},
+			Description: "Change the settings",
+			Execute:     e.cmdSettings,
 		},
 		{
 			Name:        "help",

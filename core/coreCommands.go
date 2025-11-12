@@ -17,6 +17,11 @@ func (e *EditorCore) cmdWrite(*EditorCore, []string) error {
 	return nil
 }
 
+func (e *EditorCore) cmdSettings(*EditorCore, []string) error {
+	e.loopChangeSettings()
+	return nil
+}
+
 func (e *EditorCore) cmdSave(*EditorCore, []string) error {
 	var saveBuffer []rune
 
