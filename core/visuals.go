@@ -162,7 +162,7 @@ func (e *EditorCore) ApplySettings(settings Settings) {
 // GetCurrentSettings creates a Settings struct from the current global variables
 func (e *EditorCore) GetCurrentSettings() Settings {
 	mainfg, mainbg, _ := e.Styles.Main.Decompose()
-	statusfg, statusbg, _ := e.Styles.Linecount.Decompose()
+	statusfg, statusbg, _ := e.Styles.Status.Decompose()
 	msgfg, msgbg, _ := e.Styles.Message.Decompose()
 	linecountfg, linecountbg, _ := e.Styles.Linecount.Decompose()
 	errorfg, errorbg, _ := e.Styles.Error.Decompose()
