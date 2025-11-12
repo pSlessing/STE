@@ -17,10 +17,11 @@ type EditorCore struct {
 	SourceFile string
 
 	// Display state
-	Terminal tcell.Screen
-	Styles   *StyleSet
-	Cols     int
-	Rows     int
+	Terminal       tcell.Screen
+	Styles         *StyleSet
+	SettingsLength int
+	Cols           int
+	Rows           int
 
 	// Plugin system
 	plugins  map[string]Plugin
@@ -59,7 +60,8 @@ func NewEditor() (*EditorCore, error) {
 			Linecount: tcell.StyleDefault.Foreground(tcell.ColorDarkCyan).Background(tcell.ColorWhite),
 			Error:     tcell.StyleDefault.Foreground(tcell.ColorBlack).Background(tcell.ColorRed),
 		},
-		MaxWidth: 78,
+		SettingsLength: 10,
+		MaxWidth:       78,
 	}
 	settings, err := LoadSettings()
 	if err != nil {

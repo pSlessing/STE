@@ -312,7 +312,157 @@ func (e *EditorCore) updateStylesHelper(switchIndex int, selectedColor tcell.Col
 }
 
 func (e *EditorCore) ChangeSettingsLoop() {
-	for {
 
+	colors := map[string]tcell.Color{
+		// Basic colors
+		"Black":   tcell.ColorBlack,
+		"Red":     tcell.ColorRed,
+		"Green":   tcell.ColorGreen,
+		"Yellow":  tcell.ColorYellow,
+		"Blue":    tcell.ColorBlue,
+		"Magenta": tcell.ColorDarkMagenta,
+		"Cyan":    tcell.ColorDarkCyan,
+		"White":   tcell.ColorWhite,
+
+		// Extended colors
+		"Gray":     tcell.ColorGray,
+		"DarkGray": tcell.ColorDarkGray,
+		"Silver":   tcell.ColorSilver,
+		"Maroon":   tcell.ColorMaroon,
+		"Olive":    tcell.ColorOlive,
+		"Lime":     tcell.ColorLime,
+		"Aqua":     tcell.ColorAqua,
+		"Teal":     tcell.ColorTeal,
+		"Navy":     tcell.ColorNavy,
+		"Fuchsia":  tcell.ColorFuchsia,
+		"Purple":   tcell.ColorPurple,
+		"Orange":   tcell.ColorOrange,
+		"Default":  tcell.ColorDefault,
 	}
+
+	colorNames := []string{
+		"Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White",
+		"Gray", "DarkGray", "Silver", "Maroon", "Olive", "Lime", "Aqua", "Teal",
+		"Navy", "Fuchsia", "Purple", "Orange", "Default",
+	}
+
+	exampleOffset := 5
+	e.Terminal.Clear()
+	currentPos := 0
+	colorPos := 0
+
+	// Initialize colorPos to match the current setting's color
+	colorPos = e.getCurrentColorPos(currentPos, colorNames)
+
+	e.DisplaySettingsLoop(currentPos)
+	e.DisplayColorsLoop(exampleOffset)
+	e.Terminal.Show()
+
+	for {
+		event := e.Terminal.PollEvent()
+		switch ev := event.(type) {
+
+		case *tcell.EventKey:
+			mod, key := ev.Modifiers(), ev.Key()
+			if mod == tcell.ModNone {
+				switch key {
+				case tcell.KeyEnter:
+					{
+						// Apply selected color to current style setting
+						if currentPos < e.SettingsLength {
+							selectedColor := colors[colorNames[colorPos]]
+							styleIndex := currentPos / 2
+							isBackground := (currentPos % 2) == 0
+							e.updateStylesHelper(styleIndex, selectedColor, isBackground)
+
+						}
+						return
+					}
+				case tcell.KeyEsc:
+					{
+						return
+					}
+				case tcell.KeyUp:
+					{
+						currentPos--
+						if currentPos < 0 {
+							currentPos = 0
+						}
+
+						// Update colorPos to match the current setting's color
+						if currentPos < e.SettingsLength {
+							colorPos = e.getCurrentColorPos(currentPos, colorNames)
+						}
+					}
+				case tcell.KeyDown:
+					{
+						currentPos++
+						if currentPos == e.SettingsLength {
+							currentPos = e.SettingsLength - 1
+						}
+
+						// Update colorPos to match the current setting's color
+						if currentPos < e.SettingsLength {
+							colorPos = e.getCurrentColorPos(currentPos, colorNames)
+						}
+					}
+				case tcell.KeyLeft:
+					{
+						// Navigate through colors
+						colorPos--
+						if colorPos < 0 {
+							colorPos = len(colorNames) - 1
+						}
+
+						// Apply selected color immediately for preview
+						if currentPos < e.SettingsLength {
+							selectedColor := colors[colorNames[colorPos]]
+							styleIndex := currentPos / 2
+							isBackground := (currentPos % 2) == 0
+							e.updateStylesHelper(styleIndex, selectedColor, isBackground)
+						}
+					}
+				case tcell.KeyRight:
+					{
+						// Navigate through colors
+						colorPos++
+						if colorPos >= len(colorNames) {
+							colorPos = 0
+						}
+
+						// Apply selected color immediately for preview
+						if currentPos < e.SettingsLength {
+							selectedColor := colors[colorNames[colorPos]]
+							styleIndex := currentPos / 2
+							isBackground := (currentPos % 2) == 0
+							e.updateStylesHelper(styleIndex, selectedColor, isBackground)
+						}
+					}
+				default:
+				}
+			} else if mod == tcell.ModCtrl {
+
+			} else if mod == tcell.ModAlt {
+			}
+
+		}
+		e.Terminal.Clear()
+
+		// Save the updated settings
+		currentSettings := e.GetCurrentSettings()
+		err := SaveSettings(currentSettings)
+		if err != nil {
+			// Show error message
+			e.PrintMessageStyle(0, e.Rows-1, e.Styles.Error, "Error saving settings")
+			e.Terminal.Show()
+			e.Terminal.PollEvent() // Wait for user input
+		}
+
+		// Pass current color selection to display functions for live preview
+		e.DisplaySettingsLoop(currentPos)
+		e.DisplayColorsLoop(exampleOffset)
+
+		e.Terminal.Show()
+	}
+
 }
