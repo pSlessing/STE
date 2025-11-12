@@ -97,6 +97,12 @@ func (e *EditorCore) registerBuiltInCommands() {
 			Execute:     e.cmdSave,
 		},
 		{
+			Name:        "saveas",
+			Aliases:     []string{"sa"},
+			Description: "Save current file with a specific name",
+			Execute:     e.cmdSaveAs,
+		},
+		{
 			Name:        "open",
 			Aliases:     []string{"o"},
 			Description: "Open a file",

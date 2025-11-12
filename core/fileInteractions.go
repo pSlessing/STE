@@ -81,5 +81,6 @@ func (e *EditorCore) OpenFile(filename string) ([][]rune, error) {
 	if lineNumber == 0 {
 		textBuffer = append(textBuffer, []rune{})
 	}
+	e.SourceFile = filename
 	return textBuffer, nil
 }

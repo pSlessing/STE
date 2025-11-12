@@ -1,4 +1,4 @@
-// main.go
+// main.go //Blabla
 package main
 
 import (
@@ -15,5 +15,6 @@ func main() {
 	}
 
 	// Plugins are auto-loaded in Run()
+	// Wow, i can comment in here
 	editor.Run()
 }

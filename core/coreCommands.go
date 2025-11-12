@@ -25,6 +25,59 @@ func (e *EditorCore) cmdSettings(*EditorCore, []string) error {
 func (e *EditorCore) cmdSave(*EditorCore, []string) error {
 	var saveBuffer []rune
 
+	if e.SourceFile != "" {
+		err := e.WriteBufferToFile(e.SourceFile)
+		if err != nil {
+			e.PrintMessageStyle(0, e.Rows, e.Styles.Error,
+				fmt.Sprintf("Error saving file: %s", err.Error()))
+			e.Terminal.Show()
+			e.Terminal.PollEvent()
+		}
+		return nil
+	}
+
+	for {
+		e.Terminal.Clear()
+		e.DisplayBuffer()
+		e.DisplayStatus()
+		e.PrintMessageStyle((e.Cols/2)-e.LineCountWidth, (e.Rows / 2), e.Styles.Message, "Save As:")
+		e.PrintMessageStyle((e.Cols/2)-e.LineCountWidth, (e.Rows/2)+1, e.Styles.Message, string(saveBuffer))
+		e.Terminal.Show()
+
+		event := e.Terminal.PollEvent()
+
+		switch ev := event.(type) {
+		case *tcell.EventKey:
+			if ev.Key() == tcell.KeyEnter {
+				filename := string(saveBuffer)
+				if filename != "" {
+					err := e.WriteBufferToFile(filename)
+					if err != nil {
+						e.PrintMessageStyle(0, e.Rows, e.Styles.Error,
+							fmt.Sprintf("Error saving file: %s", err.Error()))
+						e.Terminal.Show()
+						e.Terminal.PollEvent()
+					} else {
+						return nil
+					}
+				}
+				return nil
+			} else if ev.Key() == tcell.KeyBackspace || ev.Key() == tcell.KeyBackspace2 {
+				if len(saveBuffer) > 0 {
+					saveBuffer = saveBuffer[:len(saveBuffer)-1]
+				}
+			} else if ev.Key() == tcell.KeyEscape {
+				return nil
+			} else if ev.Rune() != 0 {
+				saveBuffer = append(saveBuffer, ev.Rune())
+			}
+		}
+	}
+}
+
+func (e *EditorCore) cmdSaveAs(*EditorCore, []string) error {
+	var saveBuffer []rune
+
 	for {
 		e.Terminal.Clear()
 		e.DisplayBuffer()
